@@ -1,4 +1,7 @@
 ﻿module Utilities
 
 
-let listToString list = string (List.toSeq list)
+let listToString list = 
+    list
+    |> List.map string
+    |> String.concat ""
