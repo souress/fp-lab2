@@ -15,11 +15,12 @@ let rec add (key: string) (value: 'T) (trie: Trie<'T>) =
     match keyList, trie with
     | [], Node(_, children) -> Node(Some value, children)
     | k :: ks, Empty ->
-        
+
         let child =
             match ks.IsEmpty with
             | false -> add (listToString ks) value empty<'T>
             | true -> Node(Some value, Map.empty)
+
         let children = Map.add k child Map.empty
         Node(None, children)
 
