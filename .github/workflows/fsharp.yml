@@ -27,7 +27,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Restore project
-      run: dotnet restore .\Fsharp\Fsharp.fsproj
+      run: dotnet restore .\Lab2\Lab2.fsproj
 
     - name: Install linter
       run: dotnet tool install dotnet-fsharplint --version 0.21.6
