@@ -1,4 +1,4 @@
-module Tests
+module TrieUnitTests
 
 open Xunit
 open Trie
