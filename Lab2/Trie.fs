@@ -34,7 +34,7 @@ let rec add (key: string) (value: 'T) (trie: Trie<'T>) =
             match ks.IsEmpty with
             | false -> add (listToString ks) value child
             | true -> Node(Some value, Map.empty)
-            
+
         let updatedChildren = children |> Map.add k updatedChild
         Node(optValue, updatedChildren)
     | _, _ -> failwith "Invalid key or trie"
