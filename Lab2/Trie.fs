@@ -2,23 +2,21 @@
 
 open Utilities
 
-
 type Trie<'T> =
     | Empty
     | Node of 'T option * Map<char, Trie<'T>>
 
 let empty<'T> = Empty
 
-let rec add (key: string) (value: 'T) (trie: Trie<'T>) =
+let rec add key value trie =
     let keyList = Seq.toList key
 
     match keyList, trie with
     | [], Node(_, children) -> Node(Some value, children)
     | k :: ks, Empty ->
-
         let child =
             match ks.IsEmpty with
-            | false -> add (listToString ks) value empty<'T>
+            | false -> add (listToString ks) value empty
             | true -> Node(Some value, Map.empty)
 
         let children = Map.add k child Map.empty
@@ -28,7 +26,7 @@ let rec add (key: string) (value: 'T) (trie: Trie<'T>) =
         let child =
             match Map.tryFind k children with
             | Some childTrie -> childTrie
-            | None -> empty<'T>
+            | None -> empty
 
         let updatedChild =
             match ks.IsEmpty with
