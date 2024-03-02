@@ -30,7 +30,7 @@ jobs:
       run: dotnet restore .\Lab2\Lab2.fsproj
 
     - name: Install linter
-      run: dotnet tool install dotnet-fsharplint --version 0.24.0
+      run: dotnet tool install dotnet-fsharplint --version 0.21.6
     - name: Run linter
       run: dotnet fsharplint lint --file-type project .\Lab2\Lab2.fsproj
 
