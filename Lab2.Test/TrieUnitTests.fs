@@ -23,10 +23,10 @@ let ``Вставка в пустой словарь`` () =
 
                 match grandGrandChild with
                 | Node(value, _) -> Assert.Equal(insertedValue, unbox value.Value)
-                | _ -> Assert.True(false)
-            | _ -> Assert.True(false)
-        | _ -> Assert.True(false)
-    | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
+            | _ -> Assert.True(false, "Unexpected Node")
+        | _ -> Assert.True(false, "Unexpected Node")
+    | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
 let ``Вставка в непустой словарь`` () =
@@ -47,9 +47,9 @@ let ``Вставка в непустой словарь`` () =
 
                 match grandGrandChild with
                 | Node(value, _) -> Assert.Equal(42, unbox<int> value.Value)
-                | _ -> Assert.True(false)
-            | _ -> Assert.True(false)
-        | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
+            | _ -> Assert.True(false, "Unexpected Node")
+        | _ -> Assert.True(false, "Unexpected Node")
 
         let child2 = Map.find 'd' children
 
@@ -63,10 +63,10 @@ let ``Вставка в непустой словарь`` () =
 
                 match grandGrandChild with
                 | Node(value, _) -> Assert.Equal(33, unbox<int> value.Value)
-                | _ -> Assert.True(false)
-            | _ -> Assert.True(false)
-        | _ -> Assert.True(false)
-    | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
+            | _ -> Assert.True(false, "Unexpected Node")
+        | _ -> Assert.True(false, "Unexpected Node")
+    | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
 let ``Вставка по существующему ключу`` () =
@@ -87,10 +87,10 @@ let ``Вставка по существующему ключу`` () =
 
                 match grandGrandChild with
                 | Node(value, _) -> Assert.Equal(42, unbox<int> value.Value)
-                | _ -> Assert.True(false)
-            | _ -> Assert.True(false)
-        | _ -> Assert.True(false)
-    | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
+            | _ -> Assert.True(false, "Unexpected Node")
+        | _ -> Assert.True(false, "Unexpected Node")
+    | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
 let ``Вставка множества пар в словарь`` () =
@@ -113,13 +113,13 @@ let ``Вставка множества пар в словарь`` () =
 
         match childA with
         | Node(value, _) -> Assert.Equal(15, unbox<int> value.Value)
-        | _ -> Assert.True(false)
+        | _ -> Assert.True(false, "Unexpected Node")
 
         let childI = Map.find 'i' children
 
         match childI with
         | Node(value, _) -> Assert.Equal(11, unbox<int> value.Value)
-        | _ -> Assert.True(false)
+        | _ -> Assert.True(false, "Unexpected Node")
 
         match childI with
         | Node(_, childIChildren) ->
@@ -127,7 +127,7 @@ let ``Вставка множества пар в словарь`` () =
 
             match childIN with
             | Node(value, _) -> Assert.Equal(5, unbox<int> value.Value)
-            | _ -> Assert.True(false)
+            | _ -> Assert.True(false, "Unexpected Node")
 
             match childIN with
             | Node(_, childINChildren) ->
@@ -135,9 +135,9 @@ let ``Вставка множества пар в словарь`` () =
 
                 match childINN with
                 | Node(value, _) -> Assert.Equal(9, unbox<int> value.Value)
-                | _ -> Assert.True(false)
-            | _ -> Assert.True(false)
-        | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
+            | _ -> Assert.True(false, "Unexpected Node")
+        | _ -> Assert.True(false, "Unexpected Node")
 
         let childT = Map.find 't' children
 
@@ -147,7 +147,7 @@ let ``Вставка множества пар в словарь`` () =
 
             match childTO with
             | Node(value, _) -> Assert.Equal(7, unbox<int> value.Value)
-            | _ -> Assert.True(false)
+            | _ -> Assert.True(false, "Unexpected Node")
 
             let childTE = Map.find 'e' childTChildren
 
@@ -157,23 +157,23 @@ let ``Вставка множества пар в словарь`` () =
 
                 match childTEA with
                 | Node(value, _) -> Assert.Equal(3, unbox<int> value.Value)
-                | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
 
                 let childTEN = Map.find 'n' childINChildren
 
                 match childTEN with
                 | Node(value, _) -> Assert.Equal(12, unbox<int> value.Value)
-                | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
 
                 let childTED = Map.find 'd' childINChildren
 
                 match childTED with
                 | Node(value, _) -> Assert.Equal(4, unbox<int> value.Value)
-                | _ -> Assert.True(false)
-            | _ -> Assert.True(false)
-        | _ -> Assert.True(false)
+                | _ -> Assert.True(false, "Unexpected Node")
+            | _ -> Assert.True(false, "Unexpected Node")
+        | _ -> Assert.True(false, "Unexpected Node")
 
-    | _ -> Assert.True(false)
+    | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
 let ``Поиск значения по пустому словарю`` () =
