@@ -292,3 +292,52 @@ let ``FoldRight should accumulate values correctly in a Trie`` () =
         trie |> foldRight (fun value acc -> box (unbox acc + unbox value)) state
 
     Assert.Equal(6, unbox result)
+
+[<Fact>]
+let ``Merge should combine two tries correctly`` () =
+    let trie1 =
+        Empty
+        |> insert "a" 1
+        |> insert "ab" 4
+        |> insert "b" 2
+        |> insert "c" 3
+        |> insert "cd" 5
+    let trie2 =
+        Empty
+        |> insert "a" 222
+        |> insert "abc" 200
+        |> insert "b" 334
+        |> insert "ba" 3331
+        |> insert "c" 0
+
+    let expected =
+        Empty
+        |> insert "a" 1
+        |> insert "ab" 4
+        |> insert "abc" 200
+        |> insert "b" 2
+        |> insert "ba" 3331
+        |> insert "c" 3
+        |> insert "cd" 5
+
+    let result = merge trie1 trie2
+
+    Assert.Equal(expected, result)
+
+[<Fact>]
+let ``Merge should handle empty tries correctly`` () =
+    let trie1 = Empty |> insert "abc" 1
+    let trie2 = Empty
+
+    let result = merge trie1 trie2
+
+    Assert.Equal(trie1, result)
+
+[<Fact>]
+let ``Merge should handle two empty tries correctly`` () =
+    let trie1 = Empty
+    let trie2 = Empty
+
+    let result = merge trie1 trie2
+
+    Assert.Equal(Empty, result)

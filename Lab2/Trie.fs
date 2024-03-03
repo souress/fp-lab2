@@ -123,3 +123,23 @@ let rec foldRight<'T, 'State> (f: obj -> obj -> obj) state trie =
             | None -> state
 
         Map.foldBack (fun _ s state -> foldRight f state s) children newState
+
+let rec merge (trie1: Trie<'T>) (trie2: Trie<'T>) : Trie<'T> =
+    match trie1, trie2 with
+    | Empty, _ -> trie2
+    | _, Empty -> trie1
+    | Node(value1, children1), Node(value2, children2) ->
+        let mergedValue =
+            match value1, value2 with
+            | Some v1, None -> Some v1
+            | _, Some v2 -> Some v2
+            | None, None -> None
+
+        let mergedChildren =
+            Map.fold (fun acc k v ->
+                match Map.tryFind k acc with
+                | Some childTrie -> Map.add k (merge v childTrie) acc
+                | None -> Map.add k v acc
+            ) children1 children2
+
+        Node(mergedValue, mergedChildren)
