@@ -260,3 +260,35 @@ let ``Mapping over a trie with nested values should apply the function recursive
     Assert.Equal(findResultC, Some 6)
     Assert.Equal(findResultCD, Some 8)
     Assert.Equal(findResultCDE, Some 10)
+
+[<Fact>]
+let ``Fold should return the initial state when applied to an empty Trie`` () =
+    let state = 0
+    let result = Empty |> fold (fun acc value -> box (unbox acc + unbox value)) state
+    Assert.Equal(state, unbox result)
+
+[<Fact>]
+let ``Fold should accumulate values correctly in a Trie`` () =
+    let state = 0
+    let trie = Empty |> insert "a" 1 |> insert "b" 2 |> insert "c" 3
+    let result = trie |> fold (fun acc value -> box (unbox acc + unbox value)) state
+    Assert.Equal(6, unbox result)
+
+[<Fact>]
+let ``FoldRight should return the initial state when applied to an empty Trie`` () =
+    let state = 0
+
+    let result =
+        Empty |> foldRight (fun value acc -> box (unbox acc + unbox value)) state
+
+    Assert.Equal(state, unbox result)
+
+[<Fact>]
+let ``FoldRight should accumulate values correctly in a Trie`` () =
+    let state = 0
+    let trie = Empty |> insert "a" 1 |> insert "b" 2 |> insert "c" 3
+
+    let result =
+        trie |> foldRight (fun value acc -> box (unbox acc + unbox value)) state
+
+    Assert.Equal(6, unbox result)

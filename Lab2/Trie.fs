@@ -101,3 +101,25 @@ let rec map f trie =
             |> Map.filter (fun _ childTrie -> childTrie <> Empty)
 
         Node(mappedOptValue, mappedChildren)
+
+let rec fold<'T, 'State> f state trie =
+    match trie with
+    | Empty -> state
+    | Node(optValue, children) ->
+        let newState =
+            match optValue with
+            | Some value -> f state value
+            | None -> state
+
+        Map.fold (fun acc _ -> fold f acc) newState children
+
+let rec foldRight<'T, 'State> (f: obj -> obj -> obj) state trie =
+    match trie with
+    | Empty -> state
+    | Node(optValue, children) ->
+        let newState =
+            match optValue with
+            | Some value -> f state value
+            | None -> state
+
+        Map.foldBack (fun _ s state -> foldRight f state s) children newState
