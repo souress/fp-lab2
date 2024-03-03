@@ -85,3 +85,19 @@ let rec filter predicate trie =
         match filteredOptValue, filteredChildren.IsEmpty with
         | None, true -> Empty
         | _ -> Node(filteredOptValue, filteredChildren)
+
+let rec map f trie =
+    match trie with
+    | Empty -> Empty
+    | Node(optValue, children) ->
+        let mappedOptValue =
+            match optValue with
+            | Some value -> Some(f value)
+            | None -> None
+
+        let mappedChildren =
+            children
+            |> Map.map (fun _ -> map f)
+            |> Map.filter (fun _ childTrie -> childTrie <> Empty)
+
+        Node(mappedOptValue, mappedChildren)

@@ -205,7 +205,7 @@ let ``Filtering empty trie should return empty trie`` () =
     Assert.Equal(filteredTrie, Empty)
 
 [<Fact>]
-let ``Filtering trie should return trie with values satisfying the predicate``() =
+let ``Filtering trie should return trie with values satisfying the predicate`` () =
     let trie =
         Empty
         |> insert "apple" 1
@@ -213,10 +213,50 @@ let ``Filtering trie should return trie with values satisfying the predicate``()
         |> insert "cherry" 3
         |> insert "orange" 4
 
-    let expected =
-        Empty
-        |> insert "banana" 2
-        |> insert "orange" 4
-    
+    let expected = Empty |> insert "banana" 2 |> insert "orange" 4
+
     let filteredTrie = trie |> filter (fun value -> unbox<int> value % 2 = 0)
     Assert.Equal(expected, filteredTrie)
+
+[<Fact>]
+let ``Mapping over an empty trie should return an empty trie`` () =
+    let mappedTrie = map (fun x -> x * 2) Empty
+    Assert.Equal(Empty, mappedTrie)
+
+[<Fact>]
+let ``Mapping over a non-empty trie should apply the function to each value`` () =
+    let trie = Empty |> insert "a" 1 |> insert "b" 2 |> insert "c" 3
+
+    let mappedTrie = trie |> map (fun x -> unbox<int> x * 2)
+
+    let findResultA = mappedTrie |> find "a"
+    let findResultB = mappedTrie |> find "b"
+    let findResultC = mappedTrie |> find "c"
+
+    Assert.Equal(findResultA, Some 2)
+    Assert.Equal(findResultB, Some 4)
+    Assert.Equal(findResultC, Some 6)
+
+[<Fact>]
+let ``Mapping over a trie with nested values should apply the function recursively`` () =
+    let trie =
+        Empty
+        |> insert "a" 1
+        |> insert "ab" 2
+        |> insert "c" 3
+        |> insert "cd" 4
+        |> insert "cde" 5
+
+    let mappedTrie = trie |> map (fun x -> unbox<int> x * 2)
+
+    let findResultA = mappedTrie |> find "a"
+    let findResultAB = mappedTrie |> find "ab"
+    let findResultC = mappedTrie |> find "c"
+    let findResultCD = mappedTrie |> find "cd"
+    let findResultCDE = mappedTrie |> find "cde"
+
+    Assert.Equal(findResultA, Some 2)
+    Assert.Equal(findResultAB, Some 4)
+    Assert.Equal(findResultC, Some 6)
+    Assert.Equal(findResultCD, Some 8)
+    Assert.Equal(findResultCDE, Some 10)
