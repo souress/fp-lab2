@@ -35,7 +35,7 @@ let rec insert key value trie =
 
         let updatedChildren = children |> Map.add k updatedChild
         Node(optValue, updatedChildren)
-    | _, _ -> failwith "Invalid key or trie"
+    | _, _ -> failwith "Invalid key or trie to insert"
 
 let rec remove key trie =
     let keyList = Seq.toList key
@@ -55,7 +55,7 @@ let rec remove key trie =
             Node(optValue, updatedChildren)
         | None -> Node(optValue, children)
     | _ :: _, Empty -> Empty
-    | _, _ -> failwith "Invalid key or trie"
+    | _, _ -> failwith "Invalid key or trie to remove"
 
 let rec find key trie =
     let keyList = Seq.toList key
