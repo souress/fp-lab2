@@ -36,3 +36,34 @@ let rec add key value trie =
         let updatedChildren = children |> Map.add k updatedChild
         Node(optValue, updatedChildren)
     | _, _ -> failwith "Invalid key or trie"
+
+let rec remove key trie =
+    let keyList = Seq.toList key
+
+    match keyList, trie with
+    | [], Node(_, children) -> Node(None, children)
+    | k :: ks, Node(optValue, children) ->
+        match Map.tryFind k children with
+        | Some childTrie ->
+            let updatedChild = remove (listToString ks) childTrie
+
+            let updatedChildren =
+                match updatedChild with
+                | Empty -> children |> Map.remove k
+                | _ -> children |> Map.add k updatedChild
+
+            Node(optValue, updatedChildren)
+        | None -> Node(optValue, children)
+    | _ :: _, Empty -> Empty
+    | _, _ -> failwith "Invalid key or trie"
+
+let rec find key trie =
+    let keyList = Seq.toList key
+
+    match keyList, trie with
+    | [], Node(optValue, _) -> optValue
+    | k :: ks, Node(_, children) ->
+        match Map.tryFind k children with
+        | Some childTrie -> find (listToString ks) childTrie
+        | None -> None
+    | _, _ -> None

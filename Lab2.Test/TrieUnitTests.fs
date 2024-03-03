@@ -4,9 +4,10 @@ open Xunit
 open Trie
 
 [<Fact>]
-let ``Adding a key to an empty trie`` () =
+let ``Вставка в пустой словарь`` () =
+    let insertedValue = 42
     let emptyTrie = Empty
-    let trie = add "abc" 42 emptyTrie
+    let trie = add "abc" insertedValue emptyTrie
 
     match trie with
     | Node(_, children) ->
@@ -21,14 +22,14 @@ let ``Adding a key to an empty trie`` () =
                 let grandGrandChild = Map.find 'c' childChildChildren
 
                 match grandGrandChild with
-                | Node(value, _) -> Assert.Equal(box 42, box value.Value)
+                | Node(value, _) -> Assert.Equal(insertedValue, unbox value.Value)
                 | _ -> Assert.True(false)
             | _ -> Assert.True(false)
         | _ -> Assert.True(false)
     | _ -> Assert.True(false)
 
 [<Fact>]
-let ``Add key-value pair to an existing trie`` () =
+let ``Вставка в непустой словарь`` () =
     let NotEmptyTrie = add "def" 33 Empty
     let trie = add "abc" 42 NotEmptyTrie
 
@@ -45,7 +46,7 @@ let ``Add key-value pair to an existing trie`` () =
                 let grandGrandChild = Map.find 'c' childChildChildren
 
                 match grandGrandChild with
-                | Node(value, _) -> Assert.Equal(box 42, box value.Value)
+                | Node(value, _) -> Assert.Equal(42, unbox<int> value.Value)
                 | _ -> Assert.True(false)
             | _ -> Assert.True(false)
         | _ -> Assert.True(false)
@@ -61,15 +62,38 @@ let ``Add key-value pair to an existing trie`` () =
                 let grandGrandChild = Map.find 'f' childChildChildren
 
                 match grandGrandChild with
-                | Node(value, _) -> Assert.Equal(box 33, box value.Value)
+                | Node(value, _) -> Assert.Equal(33, unbox<int> value.Value)
                 | _ -> Assert.True(false)
             | _ -> Assert.True(false)
         | _ -> Assert.True(false)
     | _ -> Assert.True(false)
 
+[<Fact>]
+let ``Вставка по существующему ключу`` () =
+    let NotEmptyTrie = add "abc" 33 Empty
+    let trie = add "abc" 42 NotEmptyTrie
+
+    match trie with
+    | Node(_, children) ->
+        let child1 = Map.find 'a' children
+
+        match child1 with
+        | Node(_, childChildren) ->
+            let grandChild = Map.find 'b' childChildren
+
+            match grandChild with
+            | Node(_, childChildChildren) ->
+                let grandGrandChild = Map.find 'c' childChildChildren
+
+                match grandGrandChild with
+                | Node(value, _) -> Assert.Equal(42, unbox<int> value.Value)
+                | _ -> Assert.True(false)
+            | _ -> Assert.True(false)
+        | _ -> Assert.True(false)
+    | _ -> Assert.True(false)
 
 [<Fact>]
-let ``Add key-value pair to an existing trie with repetitions`` () =
+let ``Вставка множества пар в словарь`` () =
     let emptyTrie = Empty
 
     let trie =
@@ -88,65 +112,90 @@ let ``Add key-value pair to an existing trie with repetitions`` () =
         let childA = Map.find 'A' children
 
         match childA with
-        | Node(value, _) -> Assert.Equal(box 15, value.Value)
+        | Node(value, _) -> Assert.Equal(15, unbox<int> value.Value)
         | _ -> Assert.True(false)
-        
+
         let childI = Map.find 'i' children
 
         match childI with
-        | Node(value, _) -> Assert.Equal(box 11, value.Value)
+        | Node(value, _) -> Assert.Equal(11, unbox<int> value.Value)
         | _ -> Assert.True(false)
-        
+
         match childI with
         | Node(_, childIChildren) ->
             let childIN = Map.find 'n' childIChildren
-            
+
             match childIN with
-            | Node(value, _) -> Assert.Equal(box 5, value.Value)
+            | Node(value, _) -> Assert.Equal(5, unbox<int> value.Value)
             | _ -> Assert.True(false)
-            
+
             match childIN with
             | Node(_, childINChildren) ->
                 let childINN = Map.find 'n' childINChildren
-                
+
                 match childINN with
-                | Node(value, _) -> Assert.Equal(box 9, value.Value)
+                | Node(value, _) -> Assert.Equal(9, unbox<int> value.Value)
                 | _ -> Assert.True(false)
             | _ -> Assert.True(false)
         | _ -> Assert.True(false)
-        
+
         let childT = Map.find 't' children
-        
+
         match childT with
         | Node(_, childTChildren) ->
             let childTO = Map.find 'o' childTChildren
-            
+
             match childTO with
-            | Node(value, _) -> Assert.Equal(box 7, value.Value)
+            | Node(value, _) -> Assert.Equal(7, unbox<int> value.Value)
             | _ -> Assert.True(false)
-                        
+
             let childTE = Map.find 'e' childTChildren
 
             match childTE with
             | Node(_, childINChildren) ->
                 let childTEA = Map.find 'a' childINChildren
-                
+
                 match childTEA with
-                | Node(value, _) -> Assert.Equal(box 3, value.Value)
+                | Node(value, _) -> Assert.Equal(3, unbox<int> value.Value)
                 | _ -> Assert.True(false)
-                
+
                 let childTEN = Map.find 'n' childINChildren
-                
+
                 match childTEN with
-                | Node(value, _) -> Assert.Equal(box 12, value.Value)
+                | Node(value, _) -> Assert.Equal(12, unbox<int> value.Value)
                 | _ -> Assert.True(false)
-                
+
                 let childTED = Map.find 'd' childINChildren
-                
+
                 match childTED with
-                | Node(value, _) -> Assert.Equal(box 4, value.Value)
+                | Node(value, _) -> Assert.Equal(4, unbox<int> value.Value)
                 | _ -> Assert.True(false)
             | _ -> Assert.True(false)
         | _ -> Assert.True(false)
-        
+
     | _ -> Assert.True(false)
+
+[<Fact>]
+let ``Поиск значения по пустому словарю`` () =
+    let findResult = Empty |> find "not-existed"
+    Assert.Equal(None, findResult)
+
+[<Fact>]
+let ``Поиск существующего значения по словарю`` () =
+    let insertedValue = 334
+    let trie = Empty |> add "existed" insertedValue
+    let findResult = trie |> find "existed"
+    Assert.Equal(insertedValue, unbox<int> findResult.Value)
+
+[<Fact>]
+let ``Удаление значения по ключу из пустого словаря`` () =
+    let emptyTrie = Empty
+    let result = emptyTrie |> remove "not-existed"
+    Assert.Equal(result, emptyTrie)
+
+[<Fact>]
+let ``Удаление значения по существующему ключу из словаря`` () =
+    let key = "existed"
+    let trie = Empty |> add key 334 |> remove key
+    let findRemovedKeyResult = trie |> find key
+    Assert.Equal(findRemovedKeyResult, None)
