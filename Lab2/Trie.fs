@@ -8,7 +8,7 @@ type Trie<'T> =
 
 let empty<'T> = Empty
 
-let rec add key value trie =
+let rec insert key value trie =
     let keyList = Seq.toList key
 
     match keyList, trie with
@@ -16,7 +16,7 @@ let rec add key value trie =
     | k :: ks, Empty ->
         let child =
             match ks.IsEmpty with
-            | false -> add (listToString ks) value empty
+            | false -> insert (listToString ks) value empty
             | true -> Node(Some value, Map.empty)
 
         let children = Map.add k child Map.empty
@@ -30,7 +30,7 @@ let rec add key value trie =
 
         let updatedChild =
             match ks.IsEmpty with
-            | false -> add (listToString ks) value child
+            | false -> insert (listToString ks) value child
             | true -> Node(Some value, Map.empty)
 
         let updatedChildren = children |> Map.add k updatedChild
@@ -67,3 +67,21 @@ let rec find key trie =
         | Some childTrie -> find (listToString ks) childTrie
         | None -> None
     | _, _ -> None
+
+let rec filter predicate trie =
+    match trie with
+    | Empty -> Empty
+    | Node(optValue, children) ->
+        let filteredOptValue =
+            match optValue with
+            | Some value when predicate value -> Some value
+            | _ -> None
+
+        let filteredChildren =
+            children
+            |> Map.map (fun _ -> filter predicate)
+            |> Map.filter (fun _ childTrie -> childTrie <> Empty)
+
+        match filteredOptValue, filteredChildren.IsEmpty with
+        | None, true -> Empty
+        | _ -> Node(filteredOptValue, filteredChildren)

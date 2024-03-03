@@ -4,10 +4,10 @@ open Xunit
 open Trie
 
 [<Fact>]
-let ``Вставка в пустой словарь`` () =
+let ``Inserting into an empty trie should create a tree with a single key`` () =
     let insertedValue = 42
     let emptyTrie = Empty
-    let trie = add "abc" insertedValue emptyTrie
+    let trie = insert "abc" insertedValue emptyTrie
 
     match trie with
     | Node(_, children) ->
@@ -29,9 +29,9 @@ let ``Вставка в пустой словарь`` () =
     | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
-let ``Вставка в непустой словарь`` () =
-    let NotEmptyTrie = add "def" 33 Empty
-    let trie = add "abc" 42 NotEmptyTrie
+let ``Inserting into a non-empty trie should correctly add new keys`` () =
+    let NotEmptyTrie = insert "def" 33 Empty
+    let trie = insert "abc" 42 NotEmptyTrie
 
     match trie with
     | Node(_, children) ->
@@ -69,9 +69,9 @@ let ``Вставка в непустой словарь`` () =
     | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
-let ``Вставка по существующему ключу`` () =
-    let NotEmptyTrie = add "abc" 33 Empty
-    let trie = add "abc" 42 NotEmptyTrie
+let ``Inserting an existing key in a trie should replace its value`` () =
+    let NotEmptyTrie = insert "abc" 33 Empty
+    let trie = insert "abc" 42 NotEmptyTrie
 
     match trie with
     | Node(_, children) ->
@@ -93,19 +93,19 @@ let ``Вставка по существующему ключу`` () =
     | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
-let ``Вставка множества пар в словарь`` () =
+let ``Inserting multiple keys into a trie should create the correct structure`` () =
     let emptyTrie = Empty
 
     let trie =
         emptyTrie
-        |> add "A" 15
-        |> add "to" 7
-        |> add "ten" 12
-        |> add "tea" 3
-        |> add "ted" 4
-        |> add "i" 11
-        |> add "in" 5
-        |> add "inn" 9
+        |> insert "A" 15
+        |> insert "to" 7
+        |> insert "ten" 12
+        |> insert "tea" 3
+        |> insert "ted" 4
+        |> insert "i" 11
+        |> insert "in" 5
+        |> insert "inn" 9
 
     match trie with
     | Node(_, children) ->
@@ -176,26 +176,47 @@ let ``Вставка множества пар в словарь`` () =
     | _ -> Assert.True(false, "Unexpected Node")
 
 [<Fact>]
-let ``Поиск значения по пустому словарю`` () =
+let ``Finding a non-existent key in an empty trie should return None`` () =
     let findResult = Empty |> find "not-existed"
     Assert.Equal(None, findResult)
 
 [<Fact>]
-let ``Поиск существующего значения по словарю`` () =
+let ``Finding an existing key in a trie should return the correct value`` () =
     let insertedValue = 334
-    let trie = Empty |> add "existed" insertedValue
+    let trie = Empty |> insert "existed" insertedValue
     let findResult = trie |> find "existed"
     Assert.Equal(insertedValue, unbox<int> findResult.Value)
 
 [<Fact>]
-let ``Удаление значения по ключу из пустого словаря`` () =
-    let emptyTrie = Empty
-    let result = emptyTrie |> remove "not-existed"
-    Assert.Equal(result, emptyTrie)
+let ``Removing a non-existent key from an empty trie should return empty trie`` () =
+    let result = Empty |> remove "not-existed"
+    Assert.Equal(result, Empty)
 
 [<Fact>]
-let ``Удаление значения по существующему ключу из словаря`` () =
+let ``Removing an existing key from a trie should result in the key not being found`` () =
     let key = "existed"
-    let trie = Empty |> add key 334 |> remove key
+    let trie = Empty |> insert key 334 |> remove key
     let findRemovedKeyResult = trie |> find key
     Assert.Equal(findRemovedKeyResult, None)
+
+[<Fact>]
+let ``Filtering empty trie should return empty trie`` () =
+    let filteredTrie = Empty |> filter (fun value -> (unbox<int> value) > 9)
+    Assert.Equal(filteredTrie, Empty)
+
+[<Fact>]
+let ``Filtering trie should return trie with values satisfying the predicate``() =
+    let trie =
+        Empty
+        |> insert "apple" 1
+        |> insert "banana" 2
+        |> insert "cherry" 3
+        |> insert "orange" 4
+
+    let expected =
+        Empty
+        |> insert "banana" 2
+        |> insert "orange" 4
+    
+    let filteredTrie = trie |> filter (fun value -> unbox<int> value % 2 = 0)
+    Assert.Equal(expected, filteredTrie)
