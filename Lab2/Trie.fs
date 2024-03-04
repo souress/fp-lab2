@@ -60,8 +60,7 @@ let rec remove key trie =
     | _ :: _, Empty -> Empty
     | _, _ -> failwith "Invalid key or trie to remove"
 
-let removeCharListKey key trie =
-    remove (charListToString key) trie
+let removeCharListKey key trie = remove (charListToString key) trie
 
 let rec find key trie =
     let keyList = Seq.toList key
@@ -74,8 +73,7 @@ let rec find key trie =
         | None -> None
     | _, _ -> None
 
-let findCharListKey (key: char list) trie =
-    find (charListToString key) trie
+let findCharListKey (key: char list) trie = find (charListToString key) trie
 
 let rec filter predicate trie =
     match trie with
