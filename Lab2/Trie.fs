@@ -16,7 +16,7 @@ let rec insert key value trie =
     | k :: ks, Empty ->
         let child =
             match ks.IsEmpty with
-            | false -> insert (listToString ks) value empty
+            | false -> insert (charListToString ks) value empty
             | true -> Node(Some value, Map.empty)
 
         let children = Map.add k child Map.empty
@@ -30,12 +30,15 @@ let rec insert key value trie =
 
         let updatedChild =
             match ks.IsEmpty with
-            | false -> insert (listToString ks) value child
+            | false -> insert (charListToString ks) value child
             | true -> Node(Some value, Map.empty)
 
         let updatedChildren = children |> Map.add k updatedChild
         Node(optValue, updatedChildren)
     | _, _ -> failwith "Invalid key or trie to insert"
+
+let insertCharListKey (key: char list) value trie =
+    insert (charListToString key) value trie
 
 let rec remove key trie =
     let keyList = Seq.toList key
@@ -45,7 +48,7 @@ let rec remove key trie =
     | k :: ks, Node(optValue, children) ->
         match Map.tryFind k children with
         | Some childTrie ->
-            let updatedChild = remove (listToString ks) childTrie
+            let updatedChild = remove (charListToString ks) childTrie
 
             let updatedChildren =
                 match updatedChild with
@@ -57,6 +60,9 @@ let rec remove key trie =
     | _ :: _, Empty -> Empty
     | _, _ -> failwith "Invalid key or trie to remove"
 
+let removeCharListKey key trie =
+    remove (charListToString key) trie
+
 let rec find key trie =
     let keyList = Seq.toList key
 
@@ -64,9 +70,12 @@ let rec find key trie =
     | [], Node(optValue, _) -> optValue
     | k :: ks, Node(_, children) ->
         match Map.tryFind k children with
-        | Some childTrie -> find (listToString ks) childTrie
+        | Some childTrie -> find (charListToString ks) childTrie
         | None -> None
     | _, _ -> None
+
+let findCharListKey (key: char list) trie =
+    find (charListToString key) trie
 
 let rec filter predicate trie =
     match trie with
@@ -136,10 +145,15 @@ let rec merge (trie1: Trie<'T>) (trie2: Trie<'T>) : Trie<'T> =
             | None, None -> None
 
         let mergedChildren =
-            Map.fold (fun acc k v ->
-                match Map.tryFind k acc with
-                | Some childTrie -> Map.add k (merge v childTrie) acc
-                | None -> Map.add k v acc
-            ) children1 children2
+            Map.fold
+                (fun acc k v ->
+                    match Map.tryFind k acc with
+                    | Some childTrie -> Map.add k (merge v childTrie) acc
+                    | None -> Map.add k v acc)
+                children1
+                children2
 
         Node(mergedValue, mergedChildren)
+
+let mapToTrie map =
+    (Empty, map) ||> Map.fold (fun acc k v -> insert k v acc)
