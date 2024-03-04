@@ -30,8 +30,8 @@ let ``Inserting into an empty trie should create a tree with a single key`` () =
 
 [<Fact>]
 let ``Inserting into a non-empty trie should correctly add new keys`` () =
-    let NotEmptyTrie = insert "def" 33 Empty
-    let trie = insert "abc" 42 NotEmptyTrie
+    let notEmptyTrie = insert "def" 33 Empty
+    let trie = insert "abc" 42 notEmptyTrie
 
     match trie with
     | Node(_, children) ->
@@ -70,8 +70,8 @@ let ``Inserting into a non-empty trie should correctly add new keys`` () =
 
 [<Fact>]
 let ``Inserting an existing key in a trie should replace its value`` () =
-    let NotEmptyTrie = insert "abc" 33 Empty
-    let trie = insert "abc" 42 NotEmptyTrie
+    let notEmptyTrie = insert "abc" 33 Empty
+    let trie = insert "abc" 42 notEmptyTrie
 
     match trie with
     | Node(_, children) ->
@@ -341,3 +341,21 @@ let ``Merge should handle two empty tries correctly`` () =
     let result = merge trie1 trie2
 
     Assert.Equal(Empty, result)
+
+[<Fact>]
+let ``MapToTrie should handle empty map`` () =
+    let map = Map.empty
+    let trie = mapToTrie map
+    let expected = Empty
+    Assert.Equal(expected, trie)
+
+[<Fact>]
+let ``MapToTrie should create trie with exact same values of map`` () =
+    let map = Map.ofList [("key1", box 1); ("key2", 2); ("key3", 3)]
+    let trie = mapToTrie map
+    let expected =
+        Empty
+        |> insert "key1" 1
+        |> insert "key2" 2
+        |> insert "key3" 3
+    Assert.Equal(expected, trie)
