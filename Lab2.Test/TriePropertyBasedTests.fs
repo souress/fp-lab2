@@ -10,7 +10,7 @@ let count = 10
 let generateKeyValuePair: Gen<char list * int> =
     Gen.zip Arb.generate<char list> Arb.generate<int>
 
-let PairsGenerator =
+let PairsGenerator: Gen<(char list * int) list> =
     gen {
         let pairs =
             generateKeyValuePair
