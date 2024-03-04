@@ -32,7 +32,7 @@ jobs:
     - name: Install linter
       run: dotnet tool install dotnet-fsharplint --version 0.21.6
     - name: Run linter
-      run: dotnet fsharplint lint --file-type project .\Lab2\Lab2.fsproj
+      run: dotnet fsharplint lint --file-type solution .\Lab2.sln
 
     - name: Install formatter
       run: dotnet tool install fantomas
