@@ -6,3 +6,5 @@ let charListToString (list: char list) =
 
 let createMap (keys: 'K list) (values: 'V list) : Map<'K, 'V> =
     List.zip keys values |> List.fold (fun acc (k, v) -> Map.add k v acc) Map.empty
+
+let equalValues value1 value2 = value1 = value2

@@ -302,6 +302,7 @@ let ``Merge should combine two tries correctly`` () =
         |> insert "b" 2
         |> insert "c" 3
         |> insert "cd" 5
+
     let trie2 =
         Empty
         |> insert "a" 222
@@ -351,11 +352,37 @@ let ``MapToTrie should handle empty map`` () =
 
 [<Fact>]
 let ``MapToTrie should create trie with exact same values of map`` () =
-    let map = Map.ofList [("key1", box 1); ("key2", 2); ("key3", 3)]
+    let map = Map.ofList [ ("key1", box 1); ("key2", 2); ("key3", 3) ]
     let trie = mapToTrie map
-    let expected =
-        Empty
-        |> insert "key1" 1
-        |> insert "key2" 2
-        |> insert "key3" 3
+    let expected = Empty |> insert "key1" 1 |> insert "key2" 2 |> insert "key3" 3
     Assert.Equal(expected, trie)
+
+[<Fact>]
+let ``Empty trie is equal to empty trie`` () =
+    let trie1 = Empty
+    let trie2 = Empty
+    equals trie1 trie2 |> Assert.True
+
+[<Fact>]
+let ``Tries with different keys are not equal`` () =
+    let trie1 = Empty |> insert "some1" 32
+    let trie2 = Empty |> insert "some2" 32
+    equals trie1 trie2 |> Assert.False
+
+[<Fact>]
+let ``Tries with different values under same keys are not equal`` () =
+    let trie1 = Empty |> insert "some1" 31
+    let trie2 = Empty |> insert "some1" 32
+    equals trie1 trie2 |> Assert.False
+
+[<Fact>]
+let ``Tries with same pairs are equal`` () =
+    let trie1 = Empty |> insert "some1" 32 |> insert "some2" 33 |> insert "some3" 34
+    let trie2 = Empty |> insert "some1" 32 |> insert "some2" 33 |> insert "some3" 34
+    equals trie1 trie2 |> Assert.True
+
+[<Fact>]
+let ``Tries with same pairs but different lengths are not equal`` () =
+    let trie1 = Empty |> insert "some1" 32 |> insert "some2" 33 |> insert "some3" 34
+    let trie2 = Empty |> insert "some1" 32 |> insert "some2" 33
+    equals trie1 trie2 |> Assert.False

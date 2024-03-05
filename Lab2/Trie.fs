@@ -155,3 +155,32 @@ let rec merge (trie1: Trie<'T>) (trie2: Trie<'T>) : Trie<'T> =
 
 let mapToTrie map =
     (Empty, map) ||> Map.fold (fun acc k v -> insert k v acc)
+
+let rec equals (trie1: Trie<'T>) (trie2: Trie<'T>) =
+    match trie1, trie2 with
+    | Empty, Empty -> true
+    | Node(value1, children1), Node(value2, children2) ->
+        let childrenEqual =
+            let childKeys1 = Map.keys children1 |> Seq.toList
+            let childKeys2 = Map.keys children2 |> Seq.toList
+
+            let rec compareChildren keys1 keys2 =
+                match keys1, keys2 with
+                | [], [] -> true
+                | k1 :: ks1, k2 :: ks2 ->
+                    match equalValues k1 k2 with
+                    | true ->
+                        let child1 = Map.find k1 children1
+                        let child2 = Map.find k2 children2
+
+                        if equals child1 child2 then
+                            compareChildren ks1 ks2
+                        else
+                            false
+                    | _ -> false
+                | _, _ -> false
+
+            compareChildren childKeys1 childKeys2
+
+        (equalValues value1 value2) && childrenEqual
+    | _, _ -> false
